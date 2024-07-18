@@ -9,20 +9,50 @@
 <body>
     <div class="container mt-5">
         <h2>Login Form</h2>
-        <form>
+        <form id="loginform" action="/login" method="post">
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" placeholder="Enter your username">
+                <label for="name" class="form-label">Username</label>
+                <input type="text" class="form-control" id="name" name="username" placeholder="Enter your username" required autocomplete="off">
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Enter your password">
+                <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password" required>
             </div>
+            <!-- Error Message Display -->
+            <div id="error-message" class="text-danger mb-3"></div>
             <button type="submit" class="btn btn-primary me-2">Login</button>
-            <a href="./signup.ejs" class="btn btn-outline-primary">Signup</a>
+            <p>Don't have an account <a href="/signup" class="btn btn-outline-primary">Signup</a></p>
         </form>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('loginform').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    errorMessage.textContent = '';
+                    window.location.href = '/'; // Redirect to homepage on successful login
+                } else {
+                    const errorData = await response.json();
+                    errorMessage.textContent = errorData.message || 'Error logging in';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error logging in';
+            }
+        });
+    </script>
 </body>
 </html>

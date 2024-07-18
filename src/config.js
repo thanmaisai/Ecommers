@@ -15,6 +15,7 @@ db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", function () {
   console.log("Database connected successfully");
 });
+
 const LoginSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -24,9 +25,8 @@ const LoginSchema = new mongoose.Schema({
       type: String,
       required: true
     }
-  });
+});
   
-
 const User = mongoose.model("User", LoginSchema);
 
 module.exports = User;

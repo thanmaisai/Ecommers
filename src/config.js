@@ -16,17 +16,52 @@ db.once("open", function () {
   console.log("Database connected successfully");
 });
 const LoginSchema = new mongoose.Schema({
-    name: {
+    username: {
       type: String,
       required: true
     },
     password: {
       type: String,
       required: true
+    }, createdAt : {
+      type:Date,
+      default:Date.now
+    },
+    updatedAt:{
+      type:Date,
+      default:Date.now
+
     }
+
   });
+
+
+const productSchema = new mongoose.Schema({
+  prodname : {
+    type : String,
+    required : true ,
+  },
+  cost : {
+    type : Number,
+    required : true,
+
+  },
+    description : {
+      type : String,
+      required: true,
+    },
+    createdAt : {
+      type:Date,
+      default:Date.now
+    },
+    updatedAt : {
+      type:Date,
+      default:Date.now
+    }
+})
   
 
 const User = mongoose.model("User", LoginSchema);
+const Products = mongoose.model("Prod",productSchema);
 
-module.exports = User;
+module.exports = {User,Products};

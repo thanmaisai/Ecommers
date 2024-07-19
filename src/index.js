@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
-const User = require('../src/config');
+const cors = require('cors')
+const { User, Products } = require('../src/config');
 dotenv.config();
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 // app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
 
 // Routes
@@ -24,10 +26,95 @@ app.get('/signup', (req, res) => {
   res.render('signup');
 });
 
+app.get('/inputprod', (req, res) => {
+  res.render('inputprod');
+});
 
 app.get('/home', (req, res) => {
   res.render('home');
+  // const  products = await Products.find();
+  // res.render('store',{products})
 });
+
+// read store page
+app.get('/store',async(req,res)=>{
+  try {
+    const products = await Products.find();
+    res.render('store', { products });
+  } catch (error) {
+    console.error("Error retrieving products:", error);
+    res.status(500).send("Error retrieving products");
+  }
+});
+
+// create
+// localhost:5000/create
+/*
+{
+  prodname,
+  cost,
+  description
+}
+*/
+app.post('/create', async (req, res) => {
+  const { prodname, cost, proddesc } = req.body;
+
+  try {
+      // Create a new instance of Products model
+      const newProduct = new Products({
+          prodname: prodname,
+          cost: cost,
+          description: proddesc
+      });
+
+      // Save the new product to the database
+      await newProduct.save();
+
+      console.log("New product added successfully:", newProduct);
+      res.status(201).json({ success: true, message: "Product added successfully" });
+  } catch (err) {
+      console.error("Error adding product:", err);
+      res.status(500).json({ success: false, message: "Failed to add product" });
+  }
+});
+
+// update
+// localhost:5000/update
+/*
+{
+  prodname:"",
+  cost:"",
+  description:""
+}
+*/
+app.put('/update', async (req, res) => {
+  const { id, ...rest } = req.body;
+  console.log(rest);
+  const data = await Products.updateOne({ _id: id }, rest);
+
+  res.json({ success: true, message: "Product updated successfully", data: data });
+});
+
+//delete
+// localhost:5000/delete/669a1506aeed16273556a168
+app.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log("product" + id + "Got deleted");
+
+  try {
+    const result = await Products.deleteOne({ _id: id });
+
+    if (result.deletedCount > 0) {
+      res.json({ success: true, message: "Product deleted successfully" });
+    } else {
+      res.status(404).json({ success: false, message: "Product not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 
 // Signup POST route
 app.post("/signup", async (req, res) => {
@@ -81,7 +168,7 @@ app.post('/login', async (req, res) => {
     if (passwordMatch) {
       console.log("Logged in successfully");
       // Redirect to the '/home' route
-       res.redirect('/home');
+      res.redirect('/home');
 
     } else {
       return res.status(401).json({ message: "Incorrect password" });
@@ -91,6 +178,11 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Products homepage
+
+
+
 
 // Server listening
 const port = process.env.PORT || 3000;

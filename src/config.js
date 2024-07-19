@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const username = process.env.username; 
+// const username = process.env.username; 
 const password = process.env.password; 
 const dbName = "dbecu"; 
 
@@ -36,7 +36,33 @@ const LoginSchema = new mongoose.Schema({
     },
 
 });
-  
-const User = mongoose.model("User", LoginSchema);
 
-module.exports = User;
+const productSchema = new mongoose.Schema({
+  prodname : {
+    type : String,
+    required : true ,
+  },
+  cost : {
+    type : Number,
+    required : true,
+
+  },
+    description : {
+      type : String,
+      required: true,
+    },
+    createdAt : {
+      type:Date,
+      default:Date.now
+    },
+    updatedAt : {
+      type:Date,
+      default:Date.now
+    }
+})
+  
+
+const User = mongoose.model("User", LoginSchema);
+const Products = mongoose.model("prods",productSchema);
+
+module.exports = {User,Products};

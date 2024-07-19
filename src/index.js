@@ -2,14 +2,17 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const dotenv = require('dotenv');
-const User = require('./config'); // assuming your model is named User
-const Products =  require('./config')  // the products schema
+const cors = require('cors')
+// const User = require('./config'); // assuming your model is named User
+// const Products =  require('./config')  // the products schema
+const {User,Products} = require('../src/config')
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors())
 
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
@@ -79,9 +82,14 @@ app.post("/signup", async (req, res) => {
 
 //store 
 app.get('/store',async(req,res)=>{
-  const  products = await Products.find();
-  res.render('store',{products})
-})
+  try {
+    const products = await Products.find();
+    res.render('store', { products });
+  } catch (error) {
+    console.error("Error retrieving products:", error);
+    res.status(500).send("Error retrieving products");
+  }
+});
 
 
 

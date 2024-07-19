@@ -30,17 +30,12 @@ app.get('/inputprod', (req, res) => {
   res.render('inputprod');
 });
 
-app.get('/home', (req, res) => {
-  res.render('home');
-  // const  products = await Products.find();
-  // res.render('store',{products})
-});
 
-// read store page
-app.get('/store',async(req,res)=>{
+// home page
+app.get('/home',async(req,res)=>{
   try {
     const products = await Products.find();
-    res.render('store', { products });
+    res.render('home', { products });
   } catch (error) {
     console.error("Error retrieving products:", error);
     res.status(500).send("Error retrieving products");

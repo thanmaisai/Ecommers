@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  
   <title>Product Store</title>
   <style>
     .card-img-top {
@@ -12,6 +14,22 @@
       object-fit: cover;
     }
   </style>
+  <script>
+      async function deleteProduct(id) {
+        try {
+          const response = await fetch(`/product/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            alert('Product deleted successfully');
+            location.reload(); // Refresh the page to reflect the changes
+          } else {
+            alert('Failed to delete product');
+          }
+        } catch (error) {
+          console.error('Error deleting product:', error);
+          alert('Error deleting product');
+        }
+      }
+    </script>
 </head>
 <body>
   <div class="container">
@@ -27,7 +45,7 @@
               <a href="#" class="btn btn-warning d-flex-col align-items-center">
                 <i class="bi bi-pencil-square mr-1"></i> Edit
               </a>
-              <a href="#" class="btn btn-danger d-flex-col align-items-center">
+              <a href="#" class="btn btn-danger d-flex-col align-items-center" onclick="deleteProduct('<%=product._id %>')">
                 <i class="bi bi-trash mr-1"></i> Delete
               </a>
             </div>
@@ -37,4 +55,4 @@
     </div>
   </div>
 </body>
-</html>
+</html> 

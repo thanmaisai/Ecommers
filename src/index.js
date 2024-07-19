@@ -91,6 +91,17 @@ app.get('/store',async(req,res)=>{
   }
 });
 
+app.delete('/product/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Products.findByIdAndDelete(id);
+    res.status(200).send("Product deleted successfully");
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).send("Error deleting product");
+  }
+});
+
 
 
 

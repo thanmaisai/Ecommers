@@ -92,23 +92,16 @@ app.put('/update', async (req, res) => {
 
 //delete
 // localhost:5000/delete/669a1506aeed16273556a168
-app.delete('/delete/:id', async (req, res) => {
-  const id = req.params.id;
-  console.log("product" + id + "Got deleted");
-
+app.delete('/product/:id', async (req, res) => {
   try {
-    const result = await Products.deleteOne({ _id: id });
-
-    if (result.deletedCount > 0) {
-      res.json({ success: true, message: "Product deleted successfully" });
-    } else {
-      res.status(404).json({ success: false, message: "Product not found" });
-    }
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    const { id } = req.params;
+    await Products.findByIdAndDelete(id);
+    res.status(200).send("Product deleted successfully");
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    res.status(500).send("Error deleting product");
   }
 });
-
 
 
 // Signup POST route

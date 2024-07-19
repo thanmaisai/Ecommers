@@ -44,7 +44,7 @@
 
                 if (response.ok) {
                     errorMessage.textContent = '';
-                    window.location.href = '/'; // Redirect to homepage on successful login
+                    window.location.href = '/home'; 
                 } else {
                     const errorData = await response.json();
                     errorMessage.textContent = errorData.message || 'Error logging in';

@@ -2,16 +2,18 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
-const User = require('./config');
+const User = require('../src/config');
 dotenv.config();
 
 const app = express();
 
+// Middlewear
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 app.set('view engine', 'ejs');
-app.use(express.static("public"));
+// app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Routes
 app.get('/', (req, res) => {
@@ -20,6 +22,11 @@ app.get('/', (req, res) => {
 
 app.get('/signup', (req, res) => {
   res.render('signup');
+});
+
+
+app.get('/home', (req, res) => {
+  res.render('home');
 });
 
 // Signup POST route
@@ -63,21 +70,25 @@ app.post("/signup", async (req, res) => {
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-      // Check if username exists
-      const user = await User.findOne({ name: username });
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
+    // Check if username exists
+    const user = await User.findOne({ name: username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      // Compare passwords
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (passwordMatch) {
-          res.render('home');
-      } else {
-          res.status(401).json({ message: "Incorrect password" });
-      }
+    // Compare passwords
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      console.log("Logged in successfully");
+      // Redirect to the '/home' route
+       res.redirect('/home');
+
+    } else {
+      return res.status(401).json({ message: "Incorrect password" });
+    }
   } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
+    console.error("Error logging in:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

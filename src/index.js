@@ -4,11 +4,14 @@ const bcrypt = require('bcryptjs');
 const dotenv = require('dotenv');
 const cors = require('cors')
 const { User, Products } = require('../src/config');
+const multer  = require('multer')
+// const upload = multer({ dest: 'public/uploads/' })
 dotenv.config();
 
 const app = express();
 
 // Middlewear
+app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
@@ -51,25 +54,42 @@ app.get('/home',async(req,res)=>{
   description
 }
 */
-app.post('/create', async (req, res) => {
-  const { prodname, cost, proddesc } = req.body;
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/uploads'); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage: storage })
+
+app.post('/create', upload.single('prodimage'), async (req, res) => {
   try {
-      // Create a new instance of Products model
-      const newProduct = new Products({
-          prodname: prodname,
-          cost: cost,
-          description: proddesc
-      });
+    const { prodname, cost, proddesc } = req.body;
+    // const prodimage = req.file.path;
 
-      // Save the new product to the database
-      await newProduct.save();
+    // Create a new instance of Products model
+    const newProduct = new Products({
+      prodname: prodname,
+      cost: cost,
+      description: proddesc,
+      prodimg: {
+        data:req.file.filename,
+        contentType:String
+      }
+    });
 
-      console.log("New product added successfully:", newProduct);
-      res.status(201).json({ success: true, message: "Product added successfully" });
+    // Save the new product to the database
+    await newProduct.save();
+
+    console.log("New product added successfully:", newProduct);
+    res.status(201).json({ success: true, message: "Product added successfully" });
   } catch (err) {
-      console.error("Error adding product:", err);
-      res.status(500).json({ success: false, message: "Failed to add product" });
+    console.error("Error adding product:", err);
+    res.status(500).json({ success: false, message: "Failed to add product" });
   }
 });
 

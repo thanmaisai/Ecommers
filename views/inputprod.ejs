@@ -58,14 +58,14 @@
             event.preventDefault();
             const prodname = document.getElementById('prodname').value;
             const cost = document.getElementById('cost').value;
-            const proddesc = document.getElementById('description').value;
+            const description = document.getElementById('description').value;
             const image = document.getElementById('image').files[0];
             const errorMessage = document.getElementById('error-message');
 
             const formData = new FormData();
             formData.append('prodname', prodname);
             formData.append('cost', cost);
-            formData.append('description', proddesc);
+            formData.append('description', description);
             formData.append('image', image);
 
 

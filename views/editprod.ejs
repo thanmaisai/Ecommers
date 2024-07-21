@@ -5,35 +5,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
 <body>
     <nav class="navbar navbar-dark bg-dark mb-3">
-        <a class="navbar-brand" href="#">E-Commerce - Edit Product</a>
+        <a class="navbar-brand" href="">SwiftCart</a>
         <a href="/home" class="btn btn-outline-primary">Back to Home</a>
     </nav>
-
-    <div class="container">
-        <h1>Edit Product</h1>
-        <form id="editProductForm">
-            <input type="hidden" id="productId" value="<%= product._id %>">
-            <div class="form-group">
-                <label for="prodname">Product Name</label>
-                <input type="text" class="form-control" id="prodname" value="<%= product.prodname %>" required>
+    <div class="container mt-3">
+        <div class="container d-flex justify-content-center mt-3 mb-3">
+            <div class="card border-dark text-white bg-dark" style="width: 60%">
+                <div class="card-header text-center">
+                    <h2>Edit Product</h2>
+                </div>
+                <div class="card-body pt-2 pl-5 pr-5">
+                    <form id="editProductForm" action="/update" method="POST">
+                        <input type="hidden" id="productId" name="productId" value="<%= product._id %>">
+                        <div class="mb-3">
+                            <label for="prodname" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="prodname" name="prodname" value="<%= product.prodname %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cost" class="form-label">Cost</label>
+                            <input type="number" class="form-control" id="cost" name="cost" value="<%= product.cost %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required><%= product.description %></textarea>
+                        </div>
+                        <!-- Error Message Display -->
+                        <div id="error-message" class="text-danger mb-3"></div>
+                        <button type="submit" class="btn btn-primary me-2">Update Product</button>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="cost">Cost</label>
-                <input type="number" class="form-control" id="cost" value="<%= product.cost %>" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control" id="description" rows="3" required><%= product.description %></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Update Product</button>
-        </form>
+        </div>
     </div>
-
+    
     <script>
         document.getElementById('editProductForm').addEventListener('submit', async (e) => {
             e.preventDefault();

@@ -1,76 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
+
 <body>
     <div class="container mt-5">
-        <h2> Product Form</h2>
-        <form id="productform" action="/create" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="prodname" class="form-label">Prodect Name</label>
-                <input type="text" class="form-control" id="prodname" name="prodname" placeholder="Enter your product name" autocomplete="off">
+        <div class="container d-flex justify-content-center mt-3 mb-3">
+            <div class="card border-dark text-white bg-dark " style="width: 30%">
+                <div class="card-header text-center">
+                    <h2> Product Form</h2>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Howdy !!</h5>
+                    <p class="card-text">Wanna add a new product?<br> Enter details here</p>
+
+                    <form id="productform" action="/create" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="prodname" class="form-label">Prodect Name</label>
+                            <input type="text" class="form-control" id="prodname" name="prodname"
+                                placeholder="Enter your product name" autocomplete="off">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cost" class="form-label">Cost</label>
+                            <input type="number" class="form-control" name="cost" id="cost"
+                                placeholder="Enter your product cost">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <input type="text" class="form-control" name="description" id="description"
+                                placeholder="Enter your product details">
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image" required>
+                        </div>
+                        <!-- Error Message Display -->
+                        <div id="error-message" class="text-danger mb-3"></div>
+                        <button type="submit" class="btn btn-primary me-2">submit</button>
+                        <button type="submit" class="btn btn-danger me-2" onclick=back()>Cancle</button>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="cost" class="form-label">Cost</label>
-                <input type="number" class="form-control" name="cost" id="cost" placeholder="Enter your product cost" >
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <input type="text" class="form-control" name="description" id="description" placeholder="Enter your product details" >
-            </div>
-            <div class="mb-3">
-                <label for="image" class="form-label">Image</label>
-                <input type="file" class="form-control" id="image" name="image" required>
-            </div>
-            <!-- Error Message Display -->
-            <div id="error-message" class="text-danger mb-3"></div>
-            <button type="submit" class="btn btn-primary me-2">submit</button>
-        </form>
+        </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script>
-    document.getElementById('productform').addEventListener('submit', async function(event) {
-    event.preventDefault();
-    const prodname = document.getElementById('prodname').value;
-    const cost = document.getElementById('cost').value;
-    const proddesc = document.getElementById('description').value;
-    const image = document.getElementById('image').files[0];
-    const errorMessage = document.getElementById('error-message');
+        document.getElementById('productform').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const prodname = document.getElementById('prodname').value;
+            const cost = document.getElementById('cost').value;
+            const proddesc = document.getElementById('description').value;
+            const image = document.getElementById('image').files[0];
+            const errorMessage = document.getElementById('error-message');
 
-    const formData = new FormData();
-        formData.append('prodname', prodname);
-        formData.append('cost', cost);
-        formData.append('description', proddesc);
-        formData.append('image', image);
-    
+            const formData = new FormData();
+            formData.append('prodname', prodname);
+            formData.append('cost', cost);
+            formData.append('description', proddesc);
+            formData.append('image', image);
 
-    try {
-        const response = await fetch('/create', {
-            method: 'POST',
-            body: formData
+
+            try {
+                const response = await fetch('/create', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    errorMessage.textContent = '';
+                    window.location.href = '/home';
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        errorMessage.textContent = errorData.message || 'Error adding product';
+                    } catch (error) {
+                        errorMessage.textContent = 'Error adding product';
+                    }
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error occurred when adding product';
+            }
         });
 
-        if (response.ok) {
-            errorMessage.textContent = '';
+        function back(){
             window.location.href = '/home';
-        } else {
-            try {
-                const errorData = await response.json();
-                errorMessage.textContent = errorData.message || 'Error adding product';
-            } catch (error) {
-                errorMessage.textContent = 'Error adding product';
-            }
         }
-    } catch (error) {
-        errorMessage.textContent = 'Error occurred when adding product';
-    }
-});
 
     </script>
 </body>
+
 </html>

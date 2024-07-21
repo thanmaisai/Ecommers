@@ -6,6 +6,24 @@ const cors = require('cors')
 const { User, Products } = require('../src/config');
 dotenv.config();
 
+
+//aws-sdk
+const multer = require('multer')
+const {getImages,uploadFile} = require('../src/s3Service')
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination:function(req,file,cb){
+    cb(null,'./upload');
+  },
+  filename:function(req,file,cb){
+    const uniqueSuffix = Date.now()+'-'+Math.round(Math.random()*1E9);
+    cb(null,uniqueSuffix+path.extname(file.originalname));
+  }
+})
+const upload = multer({storage})
+
+
 const app = express();
 
 // Middlewear
@@ -51,25 +69,39 @@ app.get('/home',async(req,res)=>{
   description
 }
 */
-app.post('/create', async (req, res) => {
+app.post('/create', upload.single('image'), async (req, res) => {
   const { prodname, cost, proddesc } = req.body;
+  const image = req.file;
 
   try {
-      // Create a new instance of Products model
-      const newProduct = new Products({
-          prodname: prodname,
-          cost: cost,
-          description: proddesc
-      });
+    // Create a new instance of Products model
+    const newProduct = new Products({
+      prodname: prodname,
+      cost: cost,
+      description: proddesc,
+    });
 
-      // Save the new product to the database
-      await newProduct.save();
+    // Handle image upload
+    if (image) {
+      console.log("File saved to:", image.path);
+      const result = await uploadFile(image.path, image.filename);
+      console.log('S3 upload result:', result);
 
-      console.log("New product added successfully:", newProduct);
-      res.status(201).json({ success: true, message: "Product added successfully" });
+      // Update product with S3 details
+      newProduct.s3Key = result.Key;
+      newProduct.s3Url = result.Location;
+    } else {
+      console.log("No image file uploaded");
+    }
+
+    // Save the new product to the database
+    await newProduct.save();
+    console.log("New product added successfully:", newProduct);
+
+    res.status(201).json({ success: true, message: "Product added successfully" });
   } catch (err) {
-      console.error("Error adding product:", err);
-      res.status(500).json({ success: false, message: "Failed to add product" });
+    console.error("Error adding product:", err);
+    res.status(500).json({ success: false, message: "Failed to add product", error: err.message });
   }
 });
 

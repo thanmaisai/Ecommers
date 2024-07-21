@@ -47,9 +47,18 @@ const productSchema = new mongoose.Schema({
     required : true,
 
   },
-    description : {
+  description : {
       type : String,
       required: true,
+    },
+    s3Key:{
+      type:String,
+      required:true
+    },
+    s3Url:{
+      type:String,
+      required:true
+
     },
     createdAt : {
       type:Date,

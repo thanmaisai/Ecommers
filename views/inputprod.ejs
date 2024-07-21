@@ -9,7 +9,7 @@
 <body>
     <div class="container mt-5">
         <h2> Product Form</h2>
-        <form id="productform" >
+        <form id="productform" action="/create" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="prodname" class="form-label">Prodect Name</label>
                 <input type="text" class="form-control" id="prodname" name="prodname" placeholder="Enter your product name" autocomplete="off">
@@ -22,6 +22,10 @@
                 <label for="description" class="form-label">Description</label>
                 <input type="text" class="form-control" name="description" id="description" placeholder="Enter your product details" >
             </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image</label>
+                <input type="file" class="form-control" id="image" name="image" required>
+            </div>
             <!-- Error Message Display -->
             <div id="error-message" class="text-danger mb-3"></div>
             <button type="submit" class="btn btn-primary me-2">submit</button>
@@ -30,20 +34,25 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-       document.getElementById('productform').addEventListener('submit', async function(event) {
+    document.getElementById('productform').addEventListener('submit', async function(event) {
     event.preventDefault();
     const prodname = document.getElementById('prodname').value;
     const cost = document.getElementById('cost').value;
     const proddesc = document.getElementById('description').value;
+    const image = document.getElementById('image').files[0];
     const errorMessage = document.getElementById('error-message');
+
+    const formData = new FormData();
+        formData.append('prodname', prodname);
+        formData.append('cost', cost);
+        formData.append('description', proddesc);
+        formData.append('image', image);
+    
 
     try {
         const response = await fetch('/create', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ prodname, cost, proddesc })
+            body: formData
         });
 
         if (response.ok) {
